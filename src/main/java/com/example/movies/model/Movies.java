@@ -1,16 +1,19 @@
 package com.example.movies.model;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
-import javax.persistence.ElementCollection;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.validation.constraints.NotBlank;
 
 /**
  * @author ronneyismael
@@ -25,21 +28,31 @@ An entity represents a table stored in a database. Every instance of an entity r
 public class Movies {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	private String title;
 	private String director;
+	@Column(length=100)
 	private String language;
+	@Column(length=100)
 	private String genre;
+	@Column(length=12)
 	private String release_date;
+	@Column(length=5)
 	private String ratings;
+	@Column(name="overview", length=1024)
 	private String overview;
 	private String poster_path;
 	private String backdrop_path;
-	@OneToMany
-	private List<Cast>  cast;
-	@OneToOne
+	@OneToMany(cascade = CascadeType.ALL,targetEntity=Cast.class)
+	//@JoinColumn(name = "movie_cast_id", nullable = false)
+	//@JoinTable(name = "movies_cast", joinColumns = @JoinColumn(name = "id"), inverseJoinColumns = @JoinColumn(name = "movie_cast_id"))
+	@JoinColumn(name = "movie_cast_id")
+	private List<Cast>  cast = new ArrayList<>();
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name="movie_trailer_id")
 	private TrailerLink trailer;
+	@Column(length=5)
 	private int vote_average;
 
 
@@ -64,21 +77,7 @@ public class Movies {
 
 	}
 	
-	public TrailerLink getTrailer() {
-		return trailer;
-	}
-
-	public void setTrailer(TrailerLink trailer) {
-		this.trailer = trailer;
-	}
-
-	public List<Cast> getCast() {
-		return cast;
-	}
-
-	public void setCast(List<Cast> cast) {
-		this.cast = cast;
-	}
+	
 
 	public  Movies(){
 
@@ -171,6 +170,35 @@ public class Movies {
 	public void setRatings(String ratings) {
 		this.ratings = ratings;
 	}
+
+	
+	public List<Cast> getCast() {
+		if(cast==null)
+		{
+			cast = new ArrayList<>();
+		}
+		return cast;
+	}
+
+
+
+	public void setCast(List<Cast> cast) {
+		this.cast = cast;
+	}
+
+
+
+	public TrailerLink getTrailer() {
+		return trailer;
+	}
+
+
+
+	public void setTrailer(TrailerLink trailer) {
+		this.trailer = trailer;
+	}
+
+
 
 	public String toString(){
 	return "Movies [id="+id+",title="

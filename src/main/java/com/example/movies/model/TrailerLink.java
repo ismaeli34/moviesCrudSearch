@@ -1,16 +1,21 @@
 package com.example.movies.model;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
-@Table(name="movies_trailer_link")
 public class TrailerLink {
 	@Id
-	private long id;
-	private String key;
-	private String name;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private long trailerId;
+	@JsonProperty("key")
+	private String trailerKey;
+	@JsonProperty("name")
+	private String trailerName;
 	
 	
 	public TrailerLink() {
@@ -18,16 +23,25 @@ public class TrailerLink {
 	}
 
 	public String getKey() {
-		return key;
+		return trailerKey;
 	}
 	public void setKey(String key) {
-		this.key = key;
+		this.trailerKey = key;
 	}
 	public String getName() {
-		return name;
+		return trailerName;
 	}
 	public void setName(String name) {
-		this.name = name;
+		this.trailerName = name;
 	}
 
+	public long getTrailerId() {
+		return trailerId;
+	}
+
+	public void setTrailerId(long trailerId) {
+		this.trailerId = trailerId;
+	}
+
+	
 }

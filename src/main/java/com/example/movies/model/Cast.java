@@ -1,50 +1,66 @@
 package com.example.movies.model;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
-@Table(name="movies_cast")
 public class Cast {
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	private String name;
-	private String profile_path;
-	private String character;
-	private int cast_id;
+	@JsonProperty("profile_path")
+	private String profilePath;
+	@JsonProperty("character")
+	private String castCharacter;
 	
 	public Cast() {
 		super();
 	}
+
+	public Cast(String name, String castCharacter, String profilePath) {
+		this.name=name;
+		this.castCharacter=castCharacter;
+		this.profilePath=profilePath;
+	}
+
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
+
 	public String getName() {
 		return name;
 	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
 
-	public String getProfile_path() {
-		return profile_path;
+	public String getProfilePath() {
+		return profilePath;
 	}
-	public void setProfile_path(String profile_path) {
-		this.profile_path = profile_path;
+
+	public void setProfilePath(String profilePath) {
+		this.profilePath = profilePath;
 	}
-	public String getCharacter() {
-		return character;
+
+	public String getCastCharacter() {
+		return castCharacter;
 	}
-	public void setCharacter(String character) {
-		this.character = character;
-	}
-	public int getCast_id() {
-		return cast_id;
-	}
-	public void setCast_id(int cast_id) {
-		this.cast_id = cast_id;
+
+	public void setCastCharacter(String castCharacter) {
+		this.castCharacter = castCharacter;
 	}
 
 	
-
-	
-
 }

@@ -21,7 +21,7 @@ import java.nio.file.Paths;
 @Configuration
 public class LuceneConfig {
 
-    @Value(value = "document.index.dir")
+    @Value("${document.index.dir}")
     private String indexFolder;
 
 	@Bean

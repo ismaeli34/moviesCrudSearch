@@ -64,7 +64,7 @@ public class MoviesServiceImpl implements MovieService {
 	@Override
 	public void addMovies(Movies movies) throws IOException {
 		// TODO Auto-generated method stub
-		
+		System.out.println("cast"+movies.getCast().get(0).getId());
 		daoRef.save(movies);
 		searchEngine.addToIndex(movies);
 	}
@@ -130,7 +130,9 @@ public class MoviesServiceImpl implements MovieService {
 				new ParameterizedTypeReference<CastResponse>() {});
 		
 	
-		return castList.getBody().getCast().stream().skip(0).limit(4).collect(Collectors.toList());
+		return castList.getBody().getCast().stream().skip(0).limit(4)
+				.map(c->new Cast(c.getName(),c.getCastCharacter(),c.getProfilePath()))
+				.collect(Collectors.toList());
 	}
 	
 	
@@ -143,9 +145,9 @@ public class MoviesServiceImpl implements MovieService {
 				new ParameterizedTypeReference<TrailerLinkResponse>() {});
 		
 		Optional<TrailerLink> trailer = trailerResponse.getBody().getResults().stream().findFirst();
-		
+		System.out.println("mov id"+movie_id+" trailer"+trailer.isPresent());
 	
-		return trailer.get();
+		return trailer.orElseGet(()-> new TrailerLink());
 		
 	}
 	
@@ -159,8 +161,11 @@ public class MoviesServiceImpl implements MovieService {
 	
 		//hasmap for
 		Map<Integer, String> genreMap = getGenre();
+		for(int i=1;i<500;i++) {
+			
+		
 		ResponseEntity<MovieResponse> moviesList= 	restTemplate.exchange(
-				"https://api.themoviedb.org/3/movie/popular?api_key=99542193a43f32719300131d920bfa56", 
+				"https://api.themoviedb.org/3/movie/popular?api_key=99542193a43f32719300131d920bfa56&sort_by=release_date.desc&page="+i, 
 				HttpMethod.GET,
 				null,
 				new ParameterizedTypeReference<MovieResponse>() {});
@@ -174,9 +179,15 @@ public class MoviesServiceImpl implements MovieService {
 				movies.setPoster_path(m.getPoster_path());
 				movies.setLanguage(m.getOriginal_language());
 				movies.setRelease_date(m.getRelease_date());
+				movies.setRatings(m.getVote_average());
+				
 				String genreName="";
 				for(Integer id: m.getGenre_ids()) {
-					 genreName+= ","+genreMap.get(id);
+					if(genreName.length()>1)
+					{
+						genreName+=",";
+					}
+					 genreName+= genreMap.get(id);
 				}
 				movies.setGenre(genreName);
 				movies.setCast(getMovieCast(m.getId()));
@@ -191,7 +202,7 @@ public class MoviesServiceImpl implements MovieService {
 			}
 		});
 	
-		
+	}
 	}
 	
 	

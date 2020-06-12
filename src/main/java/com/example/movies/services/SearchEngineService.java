@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.example.movies.model.Cast;
 import com.example.movies.model.Movies;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -42,7 +43,7 @@ public class SearchEngineService {
 
     private IndexWriter indexWriter;
     
-    @Value(value = "document.index.dir")
+    @Value("${document.index.dir}")
     private String indexFolder;
 
     
@@ -61,7 +62,7 @@ public class SearchEngineService {
 
 		IndexSearcher indexSearcher = new IndexSearcher(indexReader);
 			MultiFieldQueryParser qp = new MultiFieldQueryParser(new String[]
-				{ "title","id","director","language","genre","release_date","ratings"},
+				{ "title","id","director","language","genre","release_date","ratings","cast"},
 				new StandardAnalyzer());
 		qp.setDefaultOperator(MultiFieldQueryParser.Operator.AND);
 		TopDocs results = indexSearcher.search(qp.parse(query), 100);
@@ -81,7 +82,7 @@ public class SearchEngineService {
 			Document doc = indexSearcher.doc(scoreDoc.doc);
 			log.info("Doc---" + doc);
 
-
+			
 			Movies movie = new Movies();
 			movie.setTitle(doc.get("title"));
 			movie.setDirector(doc.get("director"));
@@ -89,13 +90,23 @@ public class SearchEngineService {
 			movie.setGenre(doc.get("genre"));
 			movie.setRelease_date(doc.get("release_date"));
 			movie.setRatings(doc.get("ratings"));
+			String castList[] = doc.get("cast").split(":");
+			//doc.ge
+			System.out.println(castList);
+			for(String cast:castList)
+			{
+				String castObj[]=cast.split(",");
+				System.out.println(castObj.length);
+				movie.getCast().add(new Cast(castObj[0], castObj[1], castObj[2]));
+			}
+			
 			movie.setId(Integer.parseInt(doc.get("id")));
 
 
 
 
 			movies.add(movie);
-			log.info("Doc title---" + movies);
+			//log.info("Doc title---" + movies);
 
 		}
 		
@@ -139,8 +150,8 @@ public class SearchEngineService {
 		Field titleField = new TextField("title", movie.getTitle(), Field.Store.YES);
 		doc.add(titleField);
 		doc.add(new TextField("id",String.valueOf(movie.getId()),Field.Store.YES));
-		Field directorField = new TextField("director", movie.getDirector(), Field.Store.YES);
-		doc.add(directorField);
+		//Field directorField = new TextField("director", movie.getDirector(), Field.Store.YES);
+		//doc.add(directorField);
 		
 		Field languageField = new TextField("language", movie.getLanguage(), Field.Store.YES);
 		doc.add(languageField);
@@ -154,7 +165,17 @@ public class SearchEngineService {
 		Field ratingsField = new TextField("ratings", movie.getRatings(), Field.Store.YES);
 		doc.add(ratingsField);
 		
-		
+		String castList = "";
+        for (Cast cast :movie.getCast()){
+        	if(castList.length()>1)
+        	{
+        		castList+=" : ";
+        	}
+        	castList+=cast.getName()+","+cast.getCastCharacter()+","+cast.getProfilePath();
+            
+        }
+        doc.add(new TextField("cast",castList, Field.Store.YES));
+
 
 			indexWriter.addDocument(doc);
 		} catch (IOException e) {

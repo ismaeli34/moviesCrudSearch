@@ -18,6 +18,7 @@ public class MoviesDB {
 	private String original_language;
 	private String backdrop_path;
 	private int [] genre_ids;
+	private String vote_average;
 	
 	
 	
@@ -81,6 +82,16 @@ public class MoviesDB {
 	}
 	public void setGenre_ids(int[] genre_ids) {
 		this.genre_ids = genre_ids;
+	}
+
+
+	public String getVote_average() {
+		return vote_average;
+	}
+
+
+	public void setVote_average(String vote_average) {
+		this.vote_average = vote_average;
 	}
 
 	
